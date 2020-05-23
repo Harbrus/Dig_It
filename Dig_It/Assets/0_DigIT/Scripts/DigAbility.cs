@@ -40,7 +40,7 @@ public class DigAbility : MonoBehaviour
     IEnumerator ActivateCollider(GameObject digDirection)
     {
         digDirection.SetActive(true);
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.05f);
         digDirection.SetActive(false);
     }
 }

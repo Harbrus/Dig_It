@@ -5,7 +5,7 @@ using UnityEngine;
 
 public enum PlayerState
 {
-    Idle,Walking, Digging
+    Idle, Walking, Digging, Dead, Frozen
 }
 public enum FacingDirection
 {
@@ -27,14 +27,14 @@ public class Player : MonoBehaviour
     public FacingDirection LastFacingDirection = FacingDirection.Down;
 
     // Cached Components
-    Rigidbody2D myRigidbody;
-    Animator anim;
+    public Rigidbody2D MyRigidbody;
+    public Animator CharacterAnimator;
 
     // Start is called before the first frame update
     void Start()
     {
-        myRigidbody = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        MyRigidbody = GetComponent<Rigidbody2D>();
+        CharacterAnimator = GetComponent<Animator>();
         currDigCD = digCD;
     }
 
@@ -51,8 +51,8 @@ public class Player : MonoBehaviour
         {
             CurrentState = PlayerState.Walking;
             MoveCharacter();
-            anim.SetFloat("moveX", movement.x);
-            anim.SetFloat("moveY", movement.y);
+            CharacterAnimator.SetFloat("moveX", movement.x);
+            CharacterAnimator.SetFloat("moveY", movement.y);
         }
         else
         {
@@ -94,6 +94,8 @@ public class Player : MonoBehaviour
 
     private void MoveCharacter()
     {
-        myRigidbody.MovePosition(transform.position + movement * speed * Time.deltaTime);
+        MyRigidbody.MovePosition(transform.position + movement * speed * Time.deltaTime);
     }
+
+    // reset player position.
 }
