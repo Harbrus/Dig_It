@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1636657608}
   - component: {fileID: 1636657609}
   - component: {fileID: 3877672369036082}
+  - component: {fileID: 8448683064580935992}
   m_Layer: 8
   m_Name: Jewel_Block
   m_TagString: Untagged
@@ -153,3 +154,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &8448683064580935992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1352567571573890161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6982311a5ca00546b26b0e39a6e3d03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jewelToSpawn: {fileID: 2796512256173803791, guid: 049270e3071b2464ba2233c8f95fbc34,
+    type: 3}

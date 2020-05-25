@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-
 	/// the current health of the character
 	[ReadOnly]
 	public int CurrentHealth;
@@ -30,8 +29,6 @@ public class Health : MonoBehaviour
 	public float DelayBeforeDestruction = 0f;
 	/// if this is set to false, the character will respawn at the location of its death, otherwise it'll be moved to its initial position (when the scene started)
 	public bool RespawnAtInitialLocation = false;
-	/// if this is true, the controller will be disabled on death
-	//public bool DisableControllerOnDeath = true;
 	/// if this is true, collisions will be turned off when the character dies
 	public bool DisableCollisionsOnDeath = true;
 
@@ -211,7 +208,7 @@ public class Health : MonoBehaviour
 			{
 				_collider2D.enabled = false;
 			}
-			// removes collisions, restores parameters for a potential respawn, and applies a death force
+			// do other effects
 		}
 
 		OnDeath?.Invoke();
