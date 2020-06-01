@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,9 +31,11 @@ public class GameManager : MonoBehaviour
 
     public bool Paused { get; set; }
 
+    bool coroutineCalled = false;
+
     /// the current player
     public Vector2 LevelMapPosition { get; set; }
-    public Player currentPlayer;
+    public GameObject currentPlayer;
 
     protected static GameManager _instance;
     protected bool _enabled;
@@ -138,6 +141,21 @@ public class GameManager : MonoBehaviour
     public virtual void LosePoint(int pointsToRemove)
     {
         Points -= pointsToRemove;
+        if(!coroutineCalled)
+        {
+            StartCoroutine(FlashRed(currentPlayer));
+        }
+    }
+
+    IEnumerator FlashRed(GameObject gameObject)
+    {
+        coroutineCalled = true;
+        gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+        yield return new WaitForSeconds(0.3f);
+        currentPlayer.GetComponent<SpriteRenderer>().color = Color.white;
+        coroutineCalled = false;
+        yield return new WaitForSeconds(0.3f);
+
     }
 
     /// <summary>
