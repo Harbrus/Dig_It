@@ -6,48 +6,55 @@ using UnityEngine;
 public class DigAbility : MonoBehaviour
 {
     // make one collider with an offsett and dimension to be set in the inspector. See weapon in MM for reference
-    public GameObject digUp;
-    public GameObject digLeft;
-    public GameObject digDown;
-    public GameObject digRight;
+    public GameObject weapon;
+    public GameObject holder;
+    public GameObject colliderAndVisual;
+    bool digging = false;
 
     // Update is called once per frame
     void Update()
     {
         if(this.GetComponent<Player>().CurrentState == PlayerState.Digging)
         {
-            switch(this.GetComponent<Player>().CurrFacingDirection)
-            {
-                case FacingDirection.Up:
-                    StartCoroutine(ActivateCollider(digUp));
-                    break;
-
-                case FacingDirection.Left:
-                    StartCoroutine(ActivateCollider(digLeft));
-                    break;
-                case FacingDirection.Down:
-                    StartCoroutine(ActivateCollider(digDown));
-                    break;
-                case FacingDirection.Right:
-                    StartCoroutine(ActivateCollider(digRight));
-                    break;
-                default:
-                    break;
-            }
+            StartCoroutine(ActivateCollider());
         }
     }
 
-    IEnumerator ActivateCollider(GameObject digDirection)
+    IEnumerator ActivateCollider()
     {
-        digDirection.SetActive(true);
-        yield return new WaitForSeconds(0.05f);
-        digDirection.SetActive(false);
+        weapon.SetActive(true);
+        colliderAndVisual.SetActive(true);
+
+        switch (this.GetComponent<Player>().CurrFacingDirection)
+        {
+            case FacingDirection.Up:
+                holder.transform.rotation = Quaternion.Euler(0, 0, 180f);
+                break;
+            case FacingDirection.Left:
+                holder.transform.rotation = Quaternion.Euler(0, 0, -90f);
+                break;
+            case FacingDirection.Down:
+                holder.transform.rotation = Quaternion.Euler(0, 0, 0);
+                break;
+            case FacingDirection.Right:
+                holder.transform.rotation = Quaternion.Euler(0, 0, 90f);
+                break;
+            default:
+                break;
+        }
+        
+        yield return new WaitForSeconds(0.03f);
+        weapon.SetActive(false);
+        colliderAndVisual.SetActive(false);
+        holder.transform.rotation = Quaternion.Euler(0, 0, 0);
+        digging = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.CompareTag("Block") && collision.GetComponent<Health>() != null)
+        if(collision.IsTouching(colliderAndVisual.GetComponent<BoxCollider2D>()) && collision.CompareTag("Block") && collision.GetComponent<Health>() != null && !digging)
         {
+            digging = true;
             collision.GetComponent<Health>().Damage(1, this.gameObject, 0.2f, 0.5f);
         }
     }

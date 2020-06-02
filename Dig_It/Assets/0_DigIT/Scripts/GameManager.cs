@@ -147,7 +147,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator FlashRed(GameObject gameObject)
+    public IEnumerator FlashRed(GameObject gameObject)
     {
         coroutineCalled = true;
         gameObject.GetComponent<SpriteRenderer>().color = Color.red;

@@ -21,7 +21,7 @@ public class Steal : MonoBehaviour
                     GameManager.Instance.LosePoint(stealAmout);
                     GetComponent<CommonGhost>().StealJewel();
                 }
-              
+                
                 StartCoroutine(playerObject.GetComponent<Health>().DamageEnabled(freezeCharacter));
             }
         }
