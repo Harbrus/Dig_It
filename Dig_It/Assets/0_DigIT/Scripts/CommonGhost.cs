@@ -162,6 +162,9 @@ public class CommonGhost : MonoBehaviour
         // StealJewel logic
 
         hasTreasure = true;
+
+        // if flee is not implemented
+        LevelManager.Instance.currentJewelAvailable--;
     }
 
     private void OnDrawGizmos()

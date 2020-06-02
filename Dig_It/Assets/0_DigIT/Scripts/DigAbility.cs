@@ -43,4 +43,12 @@ public class DigAbility : MonoBehaviour
         yield return new WaitForSeconds(0.05f);
         digDirection.SetActive(false);
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag("Block") && collision.GetComponent<Health>() != null)
+        {
+            collision.GetComponent<Health>().Damage(1, this.gameObject, 0.2f, 0.5f);
+        }
+    }
 }

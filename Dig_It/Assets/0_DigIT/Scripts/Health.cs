@@ -14,7 +14,7 @@ public class Health : MonoBehaviour
 
 	[Header("Health")]
 	/// the initial amount of health of the object
-	public int InitialHealth = 10;
+	public int InitialHealth = 3;
 	/// the maximum amount of health of the object
 	public int MaximumHealth = 10;
 
@@ -277,8 +277,6 @@ public class Health : MonoBehaviour
 		{
 			Destroy(this);
 		}
-
-		// autorespawn / respawn
 	}
 
 	/// <summary>
@@ -332,19 +330,5 @@ public class Health : MonoBehaviour
 	protected virtual void OnDisable()
 	{
 		CancelInvoke();
-	}
-
-	private void OnTriggerEnter2D(Collider2D other)
-	{
-		// temporary, should be called from other scripts (weapon and inventory (?)).
-		if (other.tag == "Weapon")
-		{
-			Damage(1, other.gameObject, 0, 0.5f);
-		}
-		
-		if(this.CompareTag("Player") && other.CompareTag("Ghost"))
-		{
-			// lose jewel
-		}
 	}
 }

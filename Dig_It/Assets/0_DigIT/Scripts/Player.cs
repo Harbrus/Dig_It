@@ -41,6 +41,12 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (this.gameObject.GetComponent<Health>().Invulnerable)
+        {
+            CurrentState = PlayerState.Frozen;
+            return;
+        }
+
         movement = Vector3.zero;
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

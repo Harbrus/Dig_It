@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -33,8 +34,12 @@ public class LevelManager : MonoBehaviour
     public int jewelToWin = 0;
     public int GameDuration = 99;
     protected bool _gameOver = false;
-    // public MMCountdown countdown; // ui element
-    public GameObject jewelNeedUI;
+    protected int remainingTime;
+
+    public GameObject countdownGameObj;
+    public GameObject jewelCountGameObj;
+    private TextMeshProUGUI countdown;
+    private TextMeshProUGUI jewelCount;
     public int currentJewelAvailable;
     private bool setGameOverCheck = true;
 
@@ -72,6 +77,8 @@ public class LevelManager : MonoBehaviour
         _instance = this as LevelManager;
         _collider = this.GetComponent<Collider>();
         _initialSpawnPointPosition = (InitialSpawnPoint == null) ? Vector3.zero : InitialSpawnPoint.transform.position;
+        countdown = countdownGameObj.GetComponent<TextMeshProUGUI>();
+        jewelCount = jewelCountGameObj.GetComponent<TextMeshProUGUI>();
     }
 
     // Start is called before the first frame update
@@ -97,8 +104,18 @@ public class LevelManager : MonoBehaviour
         }
 
         _savedPoints = GameManager.Instance.Points;
-        _started = DateTime.UtcNow;
-        // gameobject.ui.text = _started.toString().
+        remainingTime = GameDuration - RunningTime.Seconds;
+        countdown.SetText(remainingTime.ToString());
+        jewelCount.SetText(_savedPoints + "/" + currentJewelAvailable);
+
+        if(_savedPoints >= jewelToWin)
+        {
+            jewelCount.color = Color.green;
+        }
+        else
+        {
+            jewelCount.color = Color.white;
+        }
     }
 
     /// <summary>
