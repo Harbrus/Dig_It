@@ -11,16 +11,7 @@ public class DigAbility : MonoBehaviour
     public GameObject colliderAndVisual;
     bool digging = false;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(this.GetComponent<Player>().CurrentState == PlayerState.Digging)
-        {
-            StartCoroutine(ActivateCollider());
-        }
-    }
-
-    IEnumerator ActivateCollider()
+    public IEnumerator ActivateCollider()
     {
         weapon.SetActive(true);
         colliderAndVisual.SetActive(true);
@@ -48,6 +39,7 @@ public class DigAbility : MonoBehaviour
         colliderAndVisual.SetActive(false);
         holder.transform.rotation = Quaternion.Euler(0, 0, 0);
         digging = false;
+        this.GetComponent<Player>().CurrentState = PlayerState.Idle;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

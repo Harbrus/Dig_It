@@ -138,19 +138,20 @@ public class GameManager : MonoBehaviour
         Points += pointsToAdd;
     }
 
-    public virtual void LosePoint(int pointsToRemove)
+    public virtual void LosePoint(int pointsToRemove, bool shouldFlash)
     {
         Points -= pointsToRemove;
-        if(!coroutineCalled)
+
+        if(!coroutineCalled && shouldFlash)
         {
-            StartCoroutine(FlashRed(currentPlayer));
+            StartCoroutine(Flash(currentPlayer, Color.red));
         }
     }
 
-    public IEnumerator FlashRed(GameObject gameObject)
+    public IEnumerator Flash(GameObject gameObject, Color color)
     {
         coroutineCalled = true;
-        gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+        gameObject.GetComponent<SpriteRenderer>().color = color;
         yield return new WaitForSeconds(0.3f);
         currentPlayer.GetComponent<SpriteRenderer>().color = Color.white;
         coroutineCalled = false;

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Steal : MonoBehaviour
 {
     public int  stealAmout = 1;
-    public float freezeCharacter = 1f;
+    public float freezeCharacterTime = 1.5f;
     public GameObject playerObject;
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -18,11 +18,15 @@ public class Steal : MonoBehaviour
 
                 if(GameManager.Instance.Points > 0)
                 {
-                    GameManager.Instance.LosePoint(stealAmout);
+                    GameManager.Instance.LosePoint(stealAmout, true);
                     GetComponent<CommonGhost>().StealJewel();
                 }
+                else
+                {
+                    StartCoroutine(GameManager.Instance.Flash(playerObject, Color.blue));
+                }
                 
-                StartCoroutine(playerObject.GetComponent<Health>().DamageEnabled(freezeCharacter));
+                StartCoroutine(playerObject.GetComponent<Health>().DamageEnabled(freezeCharacterTime));
             }
         }
     }

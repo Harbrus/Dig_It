@@ -19,7 +19,9 @@ public class Player : MonoBehaviour
     public float speed;
     public float digCD;
     public float currDigCD;
-    private Vector3 movement;
+    public float moveLimiter = 0.7f;
+    private Vector3 movementAmount;
+    
 
     // State
     public PlayerState CurrentState;
@@ -47,23 +49,9 @@ public class Player : MonoBehaviour
             return;
         }
 
-        movement = Vector3.zero;
-        movement.x = Input.GetAxisRaw("Horizontal");
-        movement.y = Input.GetAxisRaw("Vertical");
-
-        SetFacingDirection();
-
-        if(movement!=Vector3.zero)
-        {
-            CurrentState = PlayerState.Walking;
-            MoveCharacter();
-            CharacterAnimator.SetFloat("moveX", movement.x);
-            CharacterAnimator.SetFloat("moveY", movement.y);
-        }
-        else
-        {
-            CurrentState = PlayerState.Idle;
-        }
+        movementAmount = Vector3.zero;
+        movementAmount.x = Input.GetAxisRaw("Horizontal");
+        movementAmount.y = Input.GetAxisRaw("Vertical");
 
         if (Input.GetButtonDown("Fire1") && CurrentState != PlayerState.Digging && currDigCD <= 0)
         {
@@ -74,22 +62,39 @@ public class Player : MonoBehaviour
         currDigCD -= Time.deltaTime;
     }
 
+    private void FixedUpdate()
+    {
+        if (movementAmount != Vector3.zero && CurrentState != PlayerState.Digging)
+        {
+            CurrentState = PlayerState.Walking;
+            MoveCharacter();
+            CharacterAnimator.SetFloat("moveX", movementAmount.x);
+            CharacterAnimator.SetFloat("moveY", movementAmount.y);
+            SetFacingDirection();
+        }
+        else
+        {
+            CurrentState = PlayerState.Idle;
+        }
+    }
+
     private void Dig()
     {
         CurrentState = PlayerState.Digging;
+        StartCoroutine(this.GetComponent<DigAbility>().ActivateCollider());
     }
 
     private void SetFacingDirection()
     {
 
-        if (Mathf.Abs(movement.y) > Mathf.Abs(movement.x))
+        if (Mathf.Abs(movementAmount.y) > Mathf.Abs(movementAmount.x))
         {
-            CurrFacingDirection = (movement.y > 0) ? FacingDirection.Up: FacingDirection.Down;
+            CurrFacingDirection = (movementAmount.y > 0) ? FacingDirection.Up: FacingDirection.Down;
             LastFacingDirection = CurrFacingDirection;
         }
-        else if (Mathf.Abs(movement.y) < Mathf.Abs(movement.x))
+        else if (Mathf.Abs(movementAmount.y) < Mathf.Abs(movementAmount.x))
         {
-            CurrFacingDirection = (movement.x > 0) ? FacingDirection.Right : FacingDirection.Left;
+            CurrFacingDirection = (movementAmount.x > 0) ? FacingDirection.Right : FacingDirection.Left;
             LastFacingDirection = CurrFacingDirection;
         }
         else
@@ -100,7 +105,15 @@ public class Player : MonoBehaviour
 
     private void MoveCharacter()
     {
-        MyRigidbody.MovePosition(transform.position + movement * speed * Time.deltaTime);
+
+        if (movementAmount.x != 0 && movementAmount.y != 0) // Check for diagonal movement
+        {
+            // limit movement speed diagonally, so you move at 70% speed
+            movementAmount *= moveLimiter;
+            movementAmount.y *= moveLimiter;
+        }
+
+        MyRigidbody.MovePosition(transform.position + movementAmount * speed * Time.fixedDeltaTime);
     }
 
     // reset player position.

@@ -48,7 +48,6 @@ public class Health : MonoBehaviour
 	public OnDeathDelegate OnDeath;
 
 	protected Vector3 _initialPosition;
-	protected Renderer _renderer;
 	protected Player _character;
 
 	protected Collider2D _collider2D;
@@ -71,14 +70,6 @@ public class Health : MonoBehaviour
 	protected virtual void Initialization()
 	{
 		_character = GetComponent<Player>();
-
-		if (_renderer != null)
-		{
-			if (_renderer.material.HasProperty("_Color"))
-			{
-				_initialColor = _renderer.material.color;
-			}
-		}
 
 		// we grab our animator
 		if (_character != null)
@@ -245,10 +236,6 @@ public class Health : MonoBehaviour
 		if (_character != null)
 		{
 			_character.CurrentState = PlayerState.Idle;
-		}
-		if (_renderer != null)
-		{
-			_renderer.material.color = _initialColor;
 		}
 
 		if (RespawnAtInitialLocation)

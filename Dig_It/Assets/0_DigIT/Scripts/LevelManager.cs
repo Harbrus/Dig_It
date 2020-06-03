@@ -110,7 +110,7 @@ public class LevelManager : MonoBehaviour
 
         if(_savedPoints >= jewelToWin)
         {
-            jewelCount.color = Color.green;
+            jewelCount.color = Color.red;
         }
         else
         {
