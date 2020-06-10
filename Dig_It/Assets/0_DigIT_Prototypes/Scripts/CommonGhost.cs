@@ -7,16 +7,20 @@ using UnityEngine;
 
 public class CommonGhost : MonoBehaviour
 {
-    enum BehaviourStates {Moving, Turning, Flee, Waiting};
+    enum BehaviourStates {Moving, Turning, Fleeing};
     public enum FacingDirection { Up, Right, Down, Left}
     public float speed = 3f;
     bool hasTreasure = false;
+    bool reverseDirectionNow = false;
     public float collisionCheckDistance = 0f;
+    private float initialCheckDistance;
     public float offsetRay = 0.5f;
     bool randomTurn = true;
+    bool depositJewel = false;
+
+    GameObject blockToDeposit;
 
     Vector3 currentDirection;
-    Rigidbody2D rigidbody2D;
     bool startDirection = true;
     public float turningWait = 0.5f;
     [SerializeField] protected FacingDirection CurrentFacing;
@@ -31,23 +35,30 @@ public class CommonGhost : MonoBehaviour
     void Awake()
     {
         CurrentFacing = InitialFacing;
+        initialCheckDistance = collisionCheckDistance;
         StartCoroutine(Turn());
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (hasTreasure) { PathFinding(); }
+        if (hasTreasure) 
+        { 
+            randomTurn = false;
+            CurrentBehaviour = BehaviourStates.Fleeing;
+            CheckNextMove();
+            Fleeing();
+        }
         else
         {
             CheckNextMove();
-            PatrolMovement();
+            Move();
         }
     }
 
-    private void PatrolMovement()
+    private void Move()
     {
-        if(canMove && CurrentBehaviour == BehaviourStates.Moving)
+        if(canMove && CurrentBehaviour != BehaviourStates.Turning)
         {
             transform.position += currentDirection * speed * Time.deltaTime;
         }
@@ -57,7 +68,14 @@ public class CommonGhost : MonoBehaviour
     {
         int layerMask = collisionMask.value;
         Vector3 offSetRayOrigin = currentDirection * offsetRay;
+        
+        if(hasTreasure)
+        {
+            collisionCheckDistance = 0;
+        }
+        
         RaycastHit2D checkDistance = Physics2D.Raycast(transform.position + offSetRayOrigin, currentDirection, collisionCheckDistance, layerMask);
+        
         Debug.DrawRay(transform.position, currentDirection * checkDistance.distance, Color.red);
 
         if (checkDistance.collider != null)
@@ -68,8 +86,19 @@ public class CommonGhost : MonoBehaviour
             {
                 randomTurn = false;
             }
+            else if(hasTreasure && checkDistance.collider.gameObject.tag == "Block")
+            {
+                depositJewel = true;
+                blockToDeposit = checkDistance.collider.gameObject;
+                return;
+            }
 
             StartCoroutine(Turn());
+        }
+        else if(reverseDirectionNow)
+        {
+            StartCoroutine(Turn());
+            reverseDirectionNow = false;
         }
     }
 
@@ -109,7 +138,6 @@ public class CommonGhost : MonoBehaviour
         {
             currentDirection *= -1;
             UpdateFacingDirection();
-            
         }
 
         if(randomTurn)
@@ -135,36 +163,44 @@ public class CommonGhost : MonoBehaviour
 
         yield return new WaitForSeconds(turningWait);
 
-        CurrentBehaviour = BehaviourStates.Moving;
+        if(hasTreasure)
+        {
+            CurrentBehaviour = BehaviourStates.Fleeing;
+        }
+        else
+        {
+            CurrentBehaviour = BehaviourStates.Moving;
+        }
+
         randomTurn = true;
 
-        if (startDirection)
-        {
-            startDirection = false;
+        if(startDirection)
+        { 
+            startDirection = false; 
         }
     }
-    private void PathFinding()
+    private void Fleeing()
     {
-        // Call pathfinding
-        // If near the targeted block
-        DepositJewel();
+        Move();
+        if (depositJewel)
+        {
+            DepositJewel();
+        }
     }
 
     private void DepositJewel()
     {
-        // deposit jewel on target block
+        // deposit jewel on target block 
+        blockToDeposit.GetComponent<JewelSpawner>().IncreaseJewels();
         hasTreasure = false;
-        randomTurn = false;
+        randomTurn = true;
+        collisionCheckDistance = initialCheckDistance;
     }
 
     public void StealJewel()
     {
-        // StealJewel logic
-
         hasTreasure = true;
-
-        // if flee is not implemented
-        LevelManager.Instance.currentJewelAvailable--;
+        reverseDirectionNow = true;
     }
 
     private void OnDrawGizmos()

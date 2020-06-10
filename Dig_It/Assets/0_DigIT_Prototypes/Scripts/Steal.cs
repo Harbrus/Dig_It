@@ -25,7 +25,7 @@ public class Steal : MonoBehaviour
                 {
                     StartCoroutine(GameManager.Instance.Flash(playerObject, Color.blue));
                 }
-                
+
                 StartCoroutine(playerObject.GetComponent<Health>().DamageEnabled(freezeCharacterTime));
             }
         }

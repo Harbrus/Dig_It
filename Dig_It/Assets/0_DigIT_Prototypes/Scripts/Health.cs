@@ -6,10 +6,8 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
 	/// the current health of the character
-	[ReadOnly]
 	public int CurrentHealth;
 	/// If this is true, this object can't take damage
-	[ReadOnly]
 	public bool Invulnerable = false;
 
 	[Header("Health")]
@@ -18,43 +16,22 @@ public class Health : MonoBehaviour
 	/// the maximum amount of health of the object
 	public int MaximumHealth = 10;
 
-	[Header("Damage")]
-	public bool ImmuneToKnockback = false;
-
 	/// the feedback to play when getting damage
 
 	[Header("Death")]
 	public bool DestroyOnDeath = true;
 	/// the time (in seconds) before the character is destroyed or disabled
 	public float DelayBeforeDestruction = 0f;
-	/// if this is set to false, the character will respawn at the location of its death, otherwise it'll be moved to its initial position (when the scene started)
-	public bool RespawnAtInitialLocation = false;
 	/// if this is true, collisions will be turned off when the character dies
 	public bool DisableCollisionsOnDeath = true;
 
 	/// the feedback to play when dying
 
-	// hit delegate
-	public delegate void OnHitDelegate();
-	public OnHitDelegate OnHit; // can be called and a method could be assigned from other classes to define what happens when it is used here.
-								// consider using Action/Func/Events instead https://docs.google.com/spreadsheets/d/16UAPOYnCByODiieQghWC9ldQkSCeeKpKaF_YrYLUOXc/edit?usp=sharing
-
-	// respawn delegate
-	public delegate void OnReviveDelegate();
-	public OnReviveDelegate OnRevive;
-
-	// death delegate
-	public delegate void OnDeathDelegate();
-	public OnDeathDelegate OnDeath;
-
 	protected Vector3 _initialPosition;
-	protected Player _character;
-
 	protected Collider2D _collider2D;
 	protected Rigidbody2D _rigidbody;
 	protected bool _initialized = false;
 	protected Color _initialColor;
-	protected Animator _animator;
 	
 	/// <summary>
 	/// On Start, we initialize our health
@@ -69,29 +46,6 @@ public class Health : MonoBehaviour
 	/// </summary>
 	protected virtual void Initialization()
 	{
-		_character = GetComponent<Player>();
-
-		// we grab our animator
-		if (_character != null)
-		{
-			if (_character.CharacterAnimator != null)
-			{
-				_animator = _character.CharacterAnimator;
-			}
-			else
-			{
-				_animator = GetComponent<Animator>();
-			}
-		}
-		else
-		{
-			_animator = GetComponent<Animator>();
-		}
-
-		if (_animator != null)
-		{
-			_animator.logWarnings = false;
-		}
 
 		_rigidbody = GetComponent<Rigidbody2D>();
 		_collider2D = GetComponent<Collider2D>();
@@ -114,11 +68,7 @@ public class Health : MonoBehaviour
 	/// <summary>
 	/// Called when the object takes damage
 	/// </summary>
-	/// <param name="damage">The amount of health points that will get lost.</param>
-	/// <param name="instigator">The object that caused the damage.</param>
-	/// <param name="flickerDuration">The time (in seconds) the object should flicker after taking the damage.</param>
-	/// <param name="invincibilityDuration">The duration of the short invincibility following the hit.</param>
-	public virtual void Damage(int damage, GameObject instigator, float flickerDuration, float invincibilityDuration)
+	public virtual void Damage(int damage, float flickerDuration, float invincibilityDuration)
 	{
 		// if the object is invulnerable, we do nothing and exit
 		if (Invulnerable)
@@ -136,11 +86,6 @@ public class Health : MonoBehaviour
 		float previousHealth = CurrentHealth;
 		CurrentHealth -= damage;
 
-		if (OnHit != null)
-		{
-			OnHit();
-		}
-
 		if (CurrentHealth < 0)
 		{
 			CurrentHealth = 0;
@@ -151,13 +96,6 @@ public class Health : MonoBehaviour
 		{
 			DamageDisabled();
 			StartCoroutine(DamageEnabled(invincibilityDuration));
-		}
-
-		// we trigger a damage taken event
-
-		if (_animator != null)
-		{
-			_animator.SetTrigger("Damage");
 		}
 
 		// if health has reached zero
@@ -175,23 +113,11 @@ public class Health : MonoBehaviour
 	/// </summary>
 	public virtual void Kill()
 	{
-		if (_character != null)
-		{
-			// we set its dead state to true
-			_character.CurrentState = PlayerState.Dead;
-			//_character.Reset(); -> reset player position
-		}
 		CurrentHealth = 0;
 
 		// we prevent further damage
 		DamageDisabled();
 
-		//DeathMMFeedbacks?.PlayFeedbacks(this.transform.position);
-
-		if (_animator != null)
-		{
-			_animator.SetTrigger("Death");
-		}
 		// we make it ignore the collisions from now on
 		if (DisableCollisionsOnDeath)
 		{
@@ -201,8 +127,6 @@ public class Health : MonoBehaviour
 			}
 			// do other effects
 		}
-
-		OnDeath?.Invoke();
 
 		if (DelayBeforeDestruction > 0f)
 		{
@@ -231,24 +155,8 @@ public class Health : MonoBehaviour
 		}
 
 		this.gameObject.SetActive(true);
-		// activate collisions and other components -> worth thinking having a controller - see top down controller
-
-		if (_character != null)
-		{
-			_character.CurrentState = PlayerState.Idle;
-		}
-
-		if (RespawnAtInitialLocation)
-		{
-			transform.position = _initialPosition;
-		}
 
 		Initialization();
-
-		if (OnRevive != null)
-		{
-			OnRevive();
-		}
 	}
 
 	/// <summary>
@@ -268,10 +176,7 @@ public class Health : MonoBehaviour
 
 	/// <summary>
 	/// Called when the character gets health (from a stimpack for example)
-	/// </summary>
-	/// <param name="health">The health the character gets.</param>
-	/// <param name="instigator">The thing that gives the character health.</param>
-	public virtual void GetHealth(int health, GameObject instigator)
+	public virtual void IncreaseHelath(int health)
 	{
 		// this function adds health to the character's Health and prevents it to go above MaxHealth.
 		CurrentHealth = Mathf.Min(CurrentHealth + health, MaximumHealth);

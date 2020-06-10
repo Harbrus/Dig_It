@@ -45,6 +45,7 @@ public class Player : MonoBehaviour
     {
         if (this.gameObject.GetComponent<Health>().Invulnerable)
         {
+            movementAmount = Vector3.zero;
             CurrentState = PlayerState.Frozen;
             return;
         }
@@ -64,7 +65,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (movementAmount != Vector3.zero && CurrentState != PlayerState.Digging)
+        if (movementAmount != Vector3.zero && (CurrentState != PlayerState.Digging || CurrentState != PlayerState.Frozen))
         {
             CurrentState = PlayerState.Walking;
             MoveCharacter();

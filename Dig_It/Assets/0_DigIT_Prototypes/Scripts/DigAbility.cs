@@ -47,7 +47,7 @@ public class DigAbility : MonoBehaviour
         if(collision.IsTouching(colliderAndVisual.GetComponent<BoxCollider2D>()) && collision.CompareTag("Block") && collision.GetComponent<Health>() != null && !digging)
         {
             digging = true;
-            collision.GetComponent<Health>().Damage(1, this.gameObject, 0.2f, 0.5f);
+            collision.GetComponent<Health>().Damage(1, 0.2f, 0.5f);
         }
     }
 }
