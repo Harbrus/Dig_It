@@ -98,7 +98,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stealAmout: 1
   freezeCharacterTime: 1.5
-  playerObject: {fileID: 0}
+  playerObject: {fileID: 6237440543927185289, guid: 14849b02ded3b9a47aa58a7702ba72ca,
+    type: 3}
 --- !u!58 &3199592101330889011
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -127,9 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c933994894e4584db6c9bb917a18437, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameras:
-  - {fileID: 0}
-  - {fileID: 0}
+  triggerableCameras: []
   angularSpeed: 50
   radius: 5
   angle: 0

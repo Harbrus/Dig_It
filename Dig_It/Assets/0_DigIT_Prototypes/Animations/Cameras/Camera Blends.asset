@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Camera Blends
   m_EditorClassIdentifier: 
   m_CustomBlends:
-  - m_From: CM vcam1
-    m_To: CM vcam2
+  - m_From: CM_vcam1
+    m_To: CM_vcam2
     m_Blend:
       m_Style: 1
       m_Time: 1.5
@@ -24,8 +24,8 @@ MonoBehaviour:
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 0
-  - m_From: CM vcam2
-    m_To: CM vcam1
+  - m_From: CM_vcam2
+    m_To: CM_vcam1
     m_Blend:
       m_Style: 1
       m_Time: 1.5

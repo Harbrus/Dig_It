@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class FloatingGhost : MonoBehaviour
 {
-    public GameObject[] cameras;
+    public List<GameObject> triggerableCameras;
     public float angularSpeed;
     public float radius = 1f;
     public float angle = 0;
@@ -26,6 +26,11 @@ public class FloatingGhost : MonoBehaviour
 
     void Start()
     {
+        foreach (GameObject cameraTrigger in ComponentLists.Instance.CameraTriggers)
+        {
+            cameraTrigger.GetComponent<CameraTrigger>().changeOfCamera += ChangeScreen;
+        }
+
         Initialisation();
     }
 
@@ -33,19 +38,26 @@ public class FloatingGhost : MonoBehaviour
     {
         offset = 1f;
 
-        foreach (GameObject camera in cameras)
+        triggerableCameras.Clear();
+
+        if (triggerableCameras.Count == 0 )
         {
-            if (camera.activeInHierarchy)
+            foreach(GameObject camera in ComponentLists.Instance.TriggerableCamerasInTheScene)
             {
-                circleCenter = camera.transform;
+                triggerableCameras.Add(camera);
+
+                if(camera.activeInHierarchy)
+                {
+                    circleCenter = camera.transform;
+                }
             }
         }
 
         this.transform.position = circleCenter.position;
 
         angle = UnityEngine.Random.Range(0, 360);
-        coordX = radius * Mathf.Cos(Mathf.Deg2Rad * angle);
-        coordY = radius * Mathf.Sin(Mathf.Deg2Rad * angle);
+        coordX = circleCenter.position.x + radius * Mathf.Cos(Mathf.Deg2Rad * angle);
+        coordY = circleCenter.position.y + radius * Mathf.Sin(Mathf.Deg2Rad * angle);
         positionInTheCircle = new Vector3(coordX, coordY, 0);
         transform.position = positionInTheCircle;
 
@@ -60,12 +72,11 @@ public class FloatingGhost : MonoBehaviour
             StartCoroutine(RestAfterAttack(restTime));
             // play fill opacity
         }
-        
 
         if (CurrentFloatingGhostState == FloatingGhostStates.Floating)
         {
-            coordX = radius * Mathf.Cos(Mathf.Deg2Rad * angle);
-            coordY = radius * Mathf.Sin(Mathf.Deg2Rad * angle);
+            coordX = circleCenter.position.x + radius * Mathf.Cos(Mathf.Deg2Rad * angle);
+            coordY = circleCenter.position.y + radius * Mathf.Sin(Mathf.Deg2Rad * angle);
             positionInTheCircle = new Vector3(coordX, coordY, 0);
             angle += Time.deltaTime * angularSpeed;
 
@@ -83,6 +94,13 @@ public class FloatingGhost : MonoBehaviour
             AttackPlayer();
         }
     }
+
+    private void ChangeScreen()
+    {
+        justSpawned = true;
+        Initialisation();
+    }
+
 
     private void AttackPlayer()
     {

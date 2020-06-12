@@ -43,6 +43,13 @@ public class LevelManager : MonoBehaviour
     public int currentJewelAvailable;
     private bool setGameOverCheck = true;
 
+
+    public event Action jewelCountEvent;
+    public event Action timerEvent;
+
+    public bool jewelCountEvenFired = false;
+    public bool timerEventFired = false;
+
     /// <summary>
     /// Singleton design pattern
     /// </summary>
@@ -111,10 +118,25 @@ public class LevelManager : MonoBehaviour
         if(_savedPoints >= jewelToWin)
         {
             jewelCount.color = Color.red;
+            
+            if(jewelCountEvent!=null)
+            {
+                jewelCountEvenFired = true;
+                jewelCountEvent();
+            }
         }
         else
         {
             jewelCount.color = Color.white;
+        }
+
+        if(remainingTime <= GameDuration/2)
+        {
+            if(timerEvent != null)
+            {
+                timerEventFired = true;
+                timerEvent();
+            }
         }
     }
 

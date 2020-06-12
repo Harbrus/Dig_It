@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class CommonGhost : MonoBehaviour
 {
-    enum BehaviourStates {Moving, Turning, Fleeing};
-    public enum FacingDirection { Up, Right, Down, Left}
+    enum BehaviourStates { Moving, Turning, Fleeing };
+    public enum FacingDirection { Up, Right, Down, Left }
     public float speed = 3f;
     bool hasTreasure = false;
     bool reverseDirectionNow = false;
@@ -36,29 +36,41 @@ public class CommonGhost : MonoBehaviour
     {
         CurrentFacing = InitialFacing;
         initialCheckDistance = collisionCheckDistance;
+
+        if (GetComponent<Steal>())
+        {
+            GetComponent<Steal>().jewelstolen += HasTreasure;
+        }
+
+
         StartCoroutine(Turn());
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (hasTreasure) 
-        { 
+        if (hasTreasure)
+        {
             randomTurn = false;
             CurrentBehaviour = BehaviourStates.Fleeing;
-            CheckNextMove();
             Fleeing();
         }
         else
         {
-            CheckNextMove();
             Move();
         }
     }
 
+    public void HasTreasure()
+    {
+        hasTreasure = true;
+        reverseDirectionNow = true;
+    }
+
     private void Move()
     {
-        if(canMove && CurrentBehaviour != BehaviourStates.Turning)
+        CheckNextMove();
+        if (canMove && CurrentBehaviour != BehaviourStates.Turning)
         {
             transform.position += currentDirection * speed * Time.deltaTime;
         }
@@ -68,25 +80,25 @@ public class CommonGhost : MonoBehaviour
     {
         int layerMask = collisionMask.value;
         Vector3 offSetRayOrigin = currentDirection * offsetRay;
-        
-        if(hasTreasure)
+
+        if (hasTreasure)
         {
             collisionCheckDistance = 0;
         }
-        
+
         RaycastHit2D checkDistance = Physics2D.Raycast(transform.position + offSetRayOrigin, currentDirection, collisionCheckDistance, layerMask);
-        
+
         Debug.DrawRay(transform.position, currentDirection * checkDistance.distance, Color.red);
 
         if (checkDistance.collider != null)
         {
             Debug.Log("Did Hit" + checkDistance.collider.gameObject.tag.ToString());
-            
+
             if (checkDistance.collider.gameObject.tag == "Enemy")
             {
                 randomTurn = false;
             }
-            else if(hasTreasure && checkDistance.collider.gameObject.tag == "Block")
+            else if (hasTreasure && checkDistance.collider.gameObject.tag == "Block")
             {
                 depositJewel = true;
                 blockToDeposit = checkDistance.collider.gameObject;
@@ -95,7 +107,7 @@ public class CommonGhost : MonoBehaviour
 
             StartCoroutine(Turn());
         }
-        else if(reverseDirectionNow)
+        else if (reverseDirectionNow)
         {
             StartCoroutine(Turn());
             reverseDirectionNow = false;
@@ -104,9 +116,9 @@ public class CommonGhost : MonoBehaviour
 
     private void UpdateFacingDirection()
     {
-        if(currentDirection.x > currentDirection.y)
+        if (currentDirection.x > currentDirection.y)
         {
-            if(currentDirection.x > 0)
+            if (currentDirection.x > 0)
             {
                 CurrentFacing = FacingDirection.Right;
             }
@@ -134,13 +146,13 @@ public class CommonGhost : MonoBehaviour
         {
             CurrentFacing = (FacingDirection)UnityEngine.Random.Range(0, 4);
         }
-        else if(!randomTurn)
+        else if (!randomTurn)
         {
             currentDirection *= -1;
             UpdateFacingDirection();
         }
 
-        if(randomTurn)
+        if (randomTurn)
         {
             switch (CurrentFacing)
             {
@@ -163,7 +175,7 @@ public class CommonGhost : MonoBehaviour
 
         yield return new WaitForSeconds(turningWait);
 
-        if(hasTreasure)
+        if (hasTreasure)
         {
             CurrentBehaviour = BehaviourStates.Fleeing;
         }
@@ -174,9 +186,9 @@ public class CommonGhost : MonoBehaviour
 
         randomTurn = true;
 
-        if(startDirection)
-        { 
-            startDirection = false; 
+        if (startDirection)
+        {
+            startDirection = false;
         }
     }
     private void Fleeing()
@@ -195,12 +207,6 @@ public class CommonGhost : MonoBehaviour
         hasTreasure = false;
         randomTurn = true;
         collisionCheckDistance = initialCheckDistance;
-    }
-
-    public void StealJewel()
-    {
-        hasTreasure = true;
-        reverseDirectionNow = true;
     }
 
     private void OnDrawGizmos()

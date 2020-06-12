@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Block
   - Door
+  - VirtualCamera
   layers:
   - Default
   - TransparentFX
