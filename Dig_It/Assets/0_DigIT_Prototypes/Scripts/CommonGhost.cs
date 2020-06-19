@@ -29,6 +29,10 @@ public class CommonGhost : MonoBehaviour
     BehaviourStates CurrentBehaviour = BehaviourStates.Moving;
     bool canMove = true;
     public LayerMask collisionMask;
+    public float respawnTimer = 1.5f;
+    public GameObject spawnPosition;
+    private Vector3 spawnPos;
+    private bool isRespawing = false;
 
     public FacingDirection CurrentFacingDirection { get => CurrentFacing; set => CurrentFacing = value; }
 
@@ -38,6 +42,7 @@ public class CommonGhost : MonoBehaviour
         CurrentFacing = InitialFacing;
         initialCheckDistance = collisionCheckDistance;
         initialSpeed = speed;
+        spawnPos = spawnPosition.transform.position;
 
         if (GetComponent<Steal>())
         {
@@ -51,6 +56,11 @@ public class CommonGhost : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(isRespawing)
+        {
+            return;
+        }
+
         if (hasTreasure)
         {
             randomTurn = false;
@@ -94,11 +104,7 @@ public class CommonGhost : MonoBehaviour
         {
             Debug.Log("Did Hit" + checkDistance.collider.gameObject.tag.ToString());
 
-            if (checkDistance.collider.gameObject.tag == "Enemy")
-            {
-                randomTurn = false;
-            }
-            else if (hasTreasure && checkDistance.collider.gameObject.tag == "Block")
+            if (hasTreasure && checkDistance.collider.gameObject.tag == "Block")
             {
                 depositJewel = true;
                 blockToDeposit = checkDistance.collider.gameObject;
@@ -223,5 +229,26 @@ public class CommonGhost : MonoBehaviour
     {
         Vector3 offSetRayOrigin = Vector3.up * offsetRay;
         Debug.DrawRay(transform.position + offSetRayOrigin, Vector3.up * collisionCheckDistance, Color.red);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.tag == "SolidBlock")
+        {
+            StartCoroutine(Respawn());
+        }
+    }
+
+    private IEnumerator Respawn()
+    {
+        // set collider to false 
+        isRespawing = true;
+        GetComponent<SpriteRenderer>().enabled = false;
+        yield return new WaitForSeconds(respawnTimer);
+        // set collider to true 
+        // check if the spawn position is free or let the ghost not collide until it reach a free spot on its way.
+        this.transform.position = spawnPos;
+        GetComponent<SpriteRenderer>().enabled = true;
+        isRespawing = false;
     }
 }

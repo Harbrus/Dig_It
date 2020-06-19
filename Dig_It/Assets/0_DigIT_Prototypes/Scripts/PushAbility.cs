@@ -10,7 +10,11 @@ public class PushAbility : MonoBehaviour
     private float initialPushTimer;
     public float interpolationPushAmount = 0.2f;
     public float offsetRay = 0.1f;
+    public float offsetRayDistance = .1f;
+    public float cellSize = 0.95f;
+    bool canBePushed = true;
     Vector3 collisionCheckDistance;
+    Vector3 currentDirectionPush;
 
     // Cached Components
     public LayerMask playerCollisionMask;
@@ -24,21 +28,24 @@ public class PushAbility : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        CheckPushConditions(GetComponent<Player>().MovementAmount);
+        CheckPushConditions(GetComponentInParent<Player>().MovementAmount);
         
-        while(GetComponent<Player>().CurrentState == PlayerState.Pushing)
+        if(GetComponentInParent<Player>().CurrentState == PlayerState.Pushing)
         {
-            pushReleaseTimer -= Time.deltaTime;
+            pushReleaseTimer -= Time.fixedDeltaTime;
 
-            if(pushReleaseTimer <= 0)
+            if(pushReleaseTimer <= 0 && canBePushed)
             {
                 PushSolidBlock();
             }
         }
-
-        pushReleaseTimer = initialPushTimer;
+        else
+        {
+            pushReleaseTimer = initialPushTimer;
+            canBePushed = true;
+        }
     }
 
     private void CheckPushConditions(Vector3 currentDirection)
@@ -46,58 +53,63 @@ public class PushAbility : MonoBehaviour
         int layerMask = playerCollisionMask.value;
         collisionCheckDistance = currentDirection * offsetRay;
 
-        RaycastHit2D checkDistance = Physics2D.Raycast(transform.position, currentDirection, collisionCheckDistance.magnitude, layerMask);
+        RaycastHit2D checkDistance = Physics2D.Raycast(transform.position + collisionCheckDistance, currentDirection, offsetRayDistance, layerMask);
 
-        Debug.DrawRay(transform.position, currentDirection * checkDistance.distance, Color.red);
+        Debug.DrawRay(transform.position + collisionCheckDistance, currentDirection * offsetRayDistance, Color.red);
 
         if (checkDistance.collider != null)
         {
             if (checkDistance.collider.gameObject.tag == "SolidBlock")
             {
-                GetComponent<Player>().CurrentState = PlayerState.Pushing;
+                switch (GetComponentInParent<Player>().CurrFacingDirection)
+                {
+                    case FacingDirection.Down:
+                        currentDirectionPush = Vector3.down;
+                        break;
+                    case FacingDirection.Left:
+                        currentDirectionPush = Vector3.left;
+                        break;
+                    case FacingDirection.Right:
+                        currentDirectionPush = Vector3.right;
+                        break;
+                    case FacingDirection.Up:
+                        currentDirectionPush = Vector3.up;
+                        break;
+                }
+
                 blockToPush = checkDistance.collider.gameObject;
+                int layerMaskBlock = pushedBlockCollisionMask.value;
+
+                collisionCheckDistance = currentDirectionPush * offsetRay;
+
+                RaycastHit2D checkDistanceBlock = Physics2D.Raycast(blockToPush.transform.position + collisionCheckDistance, currentDirectionPush, offsetRayDistance, layerMaskBlock);
+
+                Debug.DrawRay(blockToPush.transform.position + collisionCheckDistance, currentDirectionPush * offsetRayDistance, Color.red);
+
+                if (checkDistanceBlock.collider != null)
+                {
+                    GetComponentInParent<Player>().CurrentState = PlayerState.Walking;
+                    canBePushed = false;
+                }
+                else
+                {
+                    GetComponentInParent<Player>().CurrentState = PlayerState.Pushing;
+                    canBePushed = true;
+                }
             }
             else
             {
-                GetComponent<Player>().CurrentState = PlayerState.Walking;
+                GetComponentInParent<Player>().CurrentState = PlayerState.Walking;
             }
         }
     }
 
     private void PushSolidBlock()
     {
-        var currentDirectionPush = Vector3.zero;
-
-        switch (GetComponent<Player>().CurrFacingDirection)
-        {
-            case FacingDirection.Down:
-                currentDirectionPush = Vector3.down;
-                break;
-            case FacingDirection.Left:
-                currentDirectionPush = Vector3.left;
-                break;
-            case FacingDirection.Right:
-                currentDirectionPush = Vector3.right;
-                break;
-            case FacingDirection.Up:
-                currentDirectionPush = Vector3.up;
-                break;
-        }
-
-        int layerMask = pushedBlockCollisionMask.value;
-
-        collisionCheckDistance = currentDirectionPush * offsetRay;
-
-        RaycastHit2D checkDistance = Physics2D.Raycast(transform.position, currentDirectionPush, collisionCheckDistance.magnitude, layerMask);
-
-        if (checkDistance.collider != null)
-        {
-            GetComponent<Player>().CurrentState = PlayerState.Walking;
-        }
-        else
-        {
-            blockToPush.transform.position = Vector3.Lerp(transform.position, transform.position + currentDirectionPush, interpolationPushAmount);
-        }    
+        canBePushed = false;
+        currentDirectionPush.x *= cellSize;
+            //blockToPush.GetComponent<Rigidbody2D>().Sleep();
+            // blockToPush.transform.position = Vector3.Lerp(transform.position, transform.position + currentDirectionPush, interpolationPushAmount);
+        blockToPush.GetComponent<Rigidbody2D>().MovePosition(blockToPush.transform.position + currentDirectionPush);   
     }
-
 }

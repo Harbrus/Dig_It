@@ -104,7 +104,9 @@ MonoBehaviour:
   InitialFacing: 2
   collisionMask:
     serializedVersion: 2
-    m_Bits: 768
+    m_Bits: 3840
+  respawnTimer: 3
+  spawnPosition: {fileID: 0}
 --- !u!114 &8485327510173276760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,7 +120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stealAmout: 1
-  freezeCharacterTime: 1.5
+  freezeCharacterTime: 0.5
   playerObject: {fileID: 0}
 --- !u!58 &1123843675
 CircleCollider2D:
