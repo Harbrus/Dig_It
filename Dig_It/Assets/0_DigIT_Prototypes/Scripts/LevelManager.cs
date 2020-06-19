@@ -115,13 +115,13 @@ public class LevelManager : MonoBehaviour
         countdown.SetText(remainingTime.ToString());
         jewelCount.SetText(_savedPoints + "/" + currentJewelAvailable);
 
-        if(_savedPoints >= jewelToWin)
+        if(_savedPoints >= jewelToWin && !jewelCountEvenFired)
         {
-            jewelCount.color = Color.red;
-            
-            if(jewelCountEvent!=null)
+            jewelCount.color = Color.green;
+            jewelCountEvenFired = true;
+
+            if (jewelCountEvent!=null)
             {
-                jewelCountEvenFired = true;
                 jewelCountEvent();
             }
         }
@@ -130,11 +130,12 @@ public class LevelManager : MonoBehaviour
             jewelCount.color = Color.white;
         }
 
-        if(remainingTime <= GameDuration/2)
+        if(remainingTime <= GameDuration/2 && !timerEventFired)
         {
-            if(timerEvent != null)
+            timerEventFired = true;
+
+            if (timerEvent != null)
             {
-                timerEventFired = true;
                 timerEvent();
             }
         }

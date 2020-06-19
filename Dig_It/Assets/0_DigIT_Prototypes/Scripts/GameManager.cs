@@ -19,28 +19,22 @@ public enum DigItEventType
 
 public class GameManager : MonoBehaviour
 {
+    // Configuration
     /// the maximum amount of lives the character can currently have
     public int MaximumLives = 0;
     /// the current number of lives 
     public int CurrentLives = 0;
-
-    /// the name of the scene to redirect to when all lives are lost
-    public string GameOverScene;
-
-    public int Points;
-
-    public bool Paused { get; set; }
-
-    bool coroutineCalled = false;
-
-    /// the current player
-    public Vector2 LevelMapPosition { get; set; }
-    public GameObject currentPlayer;
-
     protected static GameManager _instance;
     protected bool _enabled;
     protected int _initialMaximumLives;
     protected int _initialCurrentLives;
+    public int Points;
+    public bool Paused { get; set; }
+    bool coroutineCalled = false;
+
+    // Cached Components
+    public GameObject currentPlayer;
+    public string GameOverScene;
 
     public static GameManager Instance
     {

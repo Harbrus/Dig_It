@@ -9,7 +9,8 @@ public class CommonGhost : MonoBehaviour
 {
     enum BehaviourStates { Moving, Turning, Fleeing };
     public enum FacingDirection { Up, Right, Down, Left }
-    public float speed = 3f;
+    public float speed = 2f;
+    float initialSpeed;
     bool hasTreasure = false;
     bool reverseDirectionNow = false;
     public float collisionCheckDistance = 0f;
@@ -17,7 +18,7 @@ public class CommonGhost : MonoBehaviour
     public float offsetRay = 0.5f;
     bool randomTurn = true;
     bool depositJewel = false;
-
+    int numberOfStolenJewel = 0;
     GameObject blockToDeposit;
 
     Vector3 currentDirection;
@@ -36,6 +37,7 @@ public class CommonGhost : MonoBehaviour
     {
         CurrentFacing = InitialFacing;
         initialCheckDistance = collisionCheckDistance;
+        initialSpeed = speed;
 
         if (GetComponent<Steal>())
         {
@@ -65,11 +67,14 @@ public class CommonGhost : MonoBehaviour
     {
         hasTreasure = true;
         reverseDirectionNow = true;
+        numberOfStolenJewel++;
+        GetComponent<SpriteRenderer>().color = Color.yellow;
     }
 
     private void Move()
     {
         CheckNextMove();
+       
         if (canMove && CurrentBehaviour != BehaviourStates.Turning)
         {
             transform.position += currentDirection * speed * Time.deltaTime;
@@ -80,11 +85,6 @@ public class CommonGhost : MonoBehaviour
     {
         int layerMask = collisionMask.value;
         Vector3 offSetRayOrigin = currentDirection * offsetRay;
-
-        if (hasTreasure)
-        {
-            collisionCheckDistance = 0;
-        }
 
         RaycastHit2D checkDistance = Physics2D.Raycast(transform.position + offSetRayOrigin, currentDirection, collisionCheckDistance, layerMask);
 
@@ -193,19 +193,29 @@ public class CommonGhost : MonoBehaviour
     }
     private void Fleeing()
     {
-        Move();
         if (depositJewel)
         {
+            //speed--;
             DepositJewel();
+            GetComponent<SpriteRenderer>().color = Color.white;
         }
+
+        if (speed == initialSpeed)
+        {
+            //speed++;
+        }
+
+        Move();
     }
 
     private void DepositJewel()
     {
         // deposit jewel on target block 
-        blockToDeposit.GetComponent<JewelSpawner>().IncreaseJewels();
+        blockToDeposit.GetComponent<JewelSpawner>().IncreaseJewels(numberOfStolenJewel);
         hasTreasure = false;
+        depositJewel = false;
         randomTurn = true;
+        numberOfStolenJewel = 0;
         collisionCheckDistance = initialCheckDistance;
     }
 

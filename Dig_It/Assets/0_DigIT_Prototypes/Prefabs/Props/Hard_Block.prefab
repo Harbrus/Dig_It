@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4292617484608458648}
   m_Layer: 8
   m_Name: Hard_Block
-  m_TagString: Untagged
+  m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -162,8 +162,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentHealth: 0
   Invulnerable: 1
-  InitialHealth: 5
-  MaximumHealth: 10
+  InitialHealth: 20
+  MaximumHealth: 20
   DestroyOnDeath: 0
   DelayBeforeDestruction: 0
   DisableCollisionsOnDeath: 1

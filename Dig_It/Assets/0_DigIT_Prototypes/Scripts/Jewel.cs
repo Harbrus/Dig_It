@@ -11,9 +11,9 @@ public class Jewel : MonoBehaviour
     {
         if(collision.tag == "Player" && !collected)
         {
+            Destroy(gameObject);
             collected = true;
             GameManager.Instance.AddPoints(jewelPointValue);
-            Destroy(gameObject);
         }
     }
 }

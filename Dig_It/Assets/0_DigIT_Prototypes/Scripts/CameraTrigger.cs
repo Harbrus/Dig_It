@@ -6,7 +6,8 @@ using UnityEngine;
 public class CameraTrigger : MonoBehaviour
 {
     [SerializeField] GameObject cameraObj;
-    public event Action changeOfCamera;
+    public event Action<int> changeOfCamera;
+    public int id = 0;
 
     private void Start()
     {
@@ -19,10 +20,12 @@ public class CameraTrigger : MonoBehaviour
         if(collision.tag == "Player" && !cameraObj.activeInHierarchy)
         {
             cameraObj.SetActive(true);
-            
-            if(changeOfCamera!=null)
+
+            // trigger another action to let the ghost disappear.
+
+            if (changeOfCamera != null)
             {
-                changeOfCamera();
+                changeOfCamera(id);
             }
         }
     }

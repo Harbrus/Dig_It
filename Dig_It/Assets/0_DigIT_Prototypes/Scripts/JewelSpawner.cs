@@ -11,9 +11,12 @@ public class JewelSpawner : MonoBehaviour
 
     public void SpawnJewel()
     {
+        var offsetSpawn = Random.Range(-0.2f, 0.2f);
+        Vector3 offsetSpawnPosition = new Vector2(offsetSpawn, offsetSpawn);
+
         if(jewelToSpawn != null)
         {
-            Instantiate(jewelToSpawn, this.transform.position, Quaternion.identity);
+            Instantiate(jewelToSpawn, (this.transform.position + offsetSpawnPosition), Quaternion.identity);
         }
     }
 
@@ -29,9 +32,9 @@ public class JewelSpawner : MonoBehaviour
         }
     }
 
-    public void IncreaseJewels()
+    public void IncreaseJewels(int increase)
     {
-        numberOfJewel++;
+        numberOfJewel += increase;
     }
 
     private void OnApplicationQuit()

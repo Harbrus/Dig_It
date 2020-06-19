@@ -5,7 +5,7 @@ using UnityEngine;
 
 public enum PlayerState
 {
-    Idle, Walking, Digging, Dead, Frozen
+    Idle, Walking, Digging, Dead, Frozen, Pushing
 }
 public enum FacingDirection
 {
@@ -22,7 +22,6 @@ public class Player : MonoBehaviour
     public float moveLimiter = 0.7f;
     private Vector3 movementAmount;
     
-
     // State
     public PlayerState CurrentState;
     public FacingDirection CurrFacingDirection = FacingDirection.Down;
@@ -31,6 +30,8 @@ public class Player : MonoBehaviour
     // Cached Components
     public Rigidbody2D MyRigidbody;
     public Animator CharacterAnimator;
+
+    public Vector3 MovementAmount { get => movementAmount;}
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +44,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+                
         if (this.gameObject.GetComponent<Health>().Invulnerable)
         {
             movementAmount = Vector3.zero;
@@ -53,7 +55,7 @@ public class Player : MonoBehaviour
         movementAmount = Vector3.zero;
         movementAmount.x = Input.GetAxisRaw("Horizontal");
         movementAmount.y = Input.GetAxisRaw("Vertical");
-
+        
         if (Input.GetButtonDown("Fire1") && CurrentState != PlayerState.Digging && currDigCD <= 0)
         {
             Dig();
@@ -87,7 +89,6 @@ public class Player : MonoBehaviour
 
     private void SetFacingDirection()
     {
-
         if (Mathf.Abs(movementAmount.y) > Mathf.Abs(movementAmount.x))
         {
             CurrFacingDirection = (movementAmount.y > 0) ? FacingDirection.Up: FacingDirection.Down;

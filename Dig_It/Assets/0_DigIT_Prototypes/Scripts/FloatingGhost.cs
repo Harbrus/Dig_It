@@ -23,8 +23,9 @@ public class FloatingGhost : MonoBehaviour
     private bool canAttack = false;
     private float attackCD = 15f;
     private bool justSpawned = true;
+    bool coroutineStarted = false;
 
-    void Start()
+    void OnEnable()
     {
         foreach (GameObject cameraTrigger in ComponentLists.Instance.CameraTriggers)
         {
@@ -40,19 +41,26 @@ public class FloatingGhost : MonoBehaviour
 
         triggerableCameras.Clear();
 
-        if (triggerableCameras.Count == 0 )
+        radius = Mathf.RoundToInt(UnityEngine.Random.Range(3, (7)));
+
+        if (triggerableCameras.Count == 0)
         {
-            foreach(GameObject camera in ComponentLists.Instance.TriggerableCamerasInTheScene)
+            foreach (GameObject camera in ComponentLists.Instance.TriggerableCamerasInTheScene)
             {
                 triggerableCameras.Add(camera);
 
-                if(camera.activeInHierarchy)
+                if (camera.activeInHierarchy)
                 {
                     circleCenter = camera.transform;
                 }
             }
         }
 
+        SetCirclePosition();
+    }
+
+    private void SetCirclePosition()
+    {
         this.transform.position = circleCenter.position;
 
         angle = UnityEngine.Random.Range(0, 360);
@@ -67,10 +75,11 @@ public class FloatingGhost : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (justSpawned)
+        if (justSpawned && !coroutineStarted)
         {
-            StartCoroutine(RestAfterAttack(restTime));
-            // play fill opacity
+            CurrentFloatingGhostState = FloatingGhostStates.Rest;
+            StartCoroutine(Rest(restTime));
+            coroutineStarted = true;
         }
 
         if (CurrentFloatingGhostState == FloatingGhostStates.Floating)
@@ -95,10 +104,13 @@ public class FloatingGhost : MonoBehaviour
         }
     }
 
-    private void ChangeScreen()
+    private void ChangeScreen(int cameraID)
     {
         justSpawned = true;
-        Initialisation();
+
+        circleCenter = triggerableCameras[cameraID].transform;
+
+        SetCirclePosition();
     }
 
 
@@ -108,16 +120,17 @@ public class FloatingGhost : MonoBehaviour
         CurrentFloatingGhostState = FloatingGhostStates.Rest;
         canAttack = false;
         // make low opacity
-        StartCoroutine(RestAfterAttack(restTime));
+        StartCoroutine(Rest(restTime));
     }
 
-    private IEnumerator RestAfterAttack(float rest)
+    private IEnumerator Rest(float rest)
     {
         // play fill opacity while resting and check to do this just once
         yield return new WaitForSeconds(rest);
         CurrentFloatingGhostState = FloatingGhostStates.Floating;
-        
-        if(justSpawned)
+        coroutineStarted = false;
+
+        if (justSpawned)
         {
             justSpawned = false;
         }

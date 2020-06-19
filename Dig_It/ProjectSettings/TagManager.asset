@@ -10,6 +10,9 @@ TagManager:
   - Block
   - Door
   - VirtualCamera
+  - Passage
+  - SolidBlock
+  - OuterWall
   layers:
   - Default
   - TransparentFX
@@ -21,7 +24,7 @@ TagManager:
   - 
   - Blocks
   - Enemy
-  - 
+  - OuterWall
   - 
   - 
   - 
