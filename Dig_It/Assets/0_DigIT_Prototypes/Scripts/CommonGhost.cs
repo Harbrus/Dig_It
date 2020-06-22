@@ -28,12 +28,16 @@ public class CommonGhost : MonoBehaviour
     [SerializeField] FacingDirection InitialFacing = FacingDirection.Down;
     BehaviourStates CurrentBehaviour = BehaviourStates.Moving;
     bool canMove = true;
-    public LayerMask collisionMask;
+    public LayerMask collisionMask; 
+    public LayerMask collisionMaskOnlyOuterWall;
+    public LayerMask ground;
     public float respawnTimer = 1.5f;
     public GameObject spawnPosition;
     private Vector3 spawnPos;
     private bool isRespawing = false;
-
+    private bool ignoreCollisionWithBlocks = false;
+    private bool checkCollisionAfterRespawn = false;
+    int layerMask;
     public FacingDirection CurrentFacingDirection { get => CurrentFacing; set => CurrentFacing = value; }
 
     // Start is called before the first frame update
@@ -93,18 +97,42 @@ public class CommonGhost : MonoBehaviour
 
     private void CheckNextMove()
     {
-        int layerMask = collisionMask.value;
+        if(checkCollisionAfterRespawn)
+        {
+            RaycastHit2D checkDistanceGround = Physics2D.Raycast(transform.position, currentDirection, 0.1f, ground.value);
+
+            if(checkDistanceGround.collider !=null)
+            {
+                if(checkDistanceGround.collider.gameObject.tag != "Ground")
+                {
+                    ignoreCollisionWithBlocks = true;
+                }
+                else
+                {
+                    ignoreCollisionWithBlocks = false;
+                    checkCollisionAfterRespawn = false;
+                }
+            }
+        }
+
+        if (ignoreCollisionWithBlocks)
+        {
+            layerMask = collisionMaskOnlyOuterWall.value;
+        }
+        else
+        {
+            layerMask = collisionMask.value;
+        }
+
         Vector3 offSetRayOrigin = currentDirection * offsetRay;
 
         RaycastHit2D checkDistance = Physics2D.Raycast(transform.position + offSetRayOrigin, currentDirection, collisionCheckDistance, layerMask);
 
-        Debug.DrawRay(transform.position, currentDirection * checkDistance.distance, Color.red);
-
         if (checkDistance.collider != null)
         {
-            Debug.Log("Did Hit" + checkDistance.collider.gameObject.tag.ToString());
+            Debug.Log("Did Hit " + checkDistance.collider.gameObject.name.ToString());
 
-            if (hasTreasure && checkDistance.collider.gameObject.tag == "Block")
+            if (hasTreasure && (checkDistance.collider.gameObject.tag == "Block" || checkDistance.collider.gameObject.tag == "SolidBlock"))
             {
                 depositJewel = true;
                 blockToDeposit = checkDistance.collider.gameObject;
@@ -233,8 +261,9 @@ public class CommonGhost : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag == "SolidBlock")
+        if (collision.gameObject.GetComponent<Block>() != null && collision.gameObject.GetComponent<Block>().BeingPushed)
         {
+            checkCollisionAfterRespawn = false;
             StartCoroutine(Respawn());
         }
     }
@@ -244,11 +273,12 @@ public class CommonGhost : MonoBehaviour
         // set collider to false 
         isRespawing = true;
         GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<Collider2D>().enabled = false;
         yield return new WaitForSeconds(respawnTimer);
-        // set collider to true 
-        // check if the spawn position is free or let the ghost not collide until it reach a free spot on its way.
         this.transform.position = spawnPos;
         GetComponent<SpriteRenderer>().enabled = true;
+        GetComponent<Collider2D>().enabled = true;
         isRespawing = false;
+        checkCollisionAfterRespawn = true;
     }
 }

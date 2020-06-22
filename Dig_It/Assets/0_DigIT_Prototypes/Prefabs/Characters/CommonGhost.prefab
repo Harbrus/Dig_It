@@ -105,6 +105,9 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 3840
+  collisionMaskOnlyOuterWall:
+    serializedVersion: 2
+    m_Bits: 1024
   respawnTimer: 3
   spawnPosition: {fileID: 0}
 --- !u!114 &8485327510173276760

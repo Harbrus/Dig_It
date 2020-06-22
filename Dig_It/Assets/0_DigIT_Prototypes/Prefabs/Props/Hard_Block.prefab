@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6625757229773511522}
   - component: {fileID: 5400181516168882134}
   - component: {fileID: 4292617484608458648}
+  - component: {fileID: 8307764910086349432}
   m_Layer: 8
   m_Name: Hard_Block
   m_TagString: Block
@@ -167,3 +168,15 @@ MonoBehaviour:
   DestroyOnDeath: 0
   DelayBeforeDestruction: 0
   DisableCollisionsOnDeath: 1
+--- !u!114 &8307764910086349432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3476625599912575692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b8c24e1d214ac548a96b62ceb706ad4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
