@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2
+  hasTreasure: 0
   collisionCheckDistance: 0.23
   offsetRay: 0.27
   turningWait: 0.2
@@ -108,8 +109,11 @@ MonoBehaviour:
   collisionMaskOnlyOuterWall:
     serializedVersion: 2
     m_Bits: 1024
+  ground:
+    serializedVersion: 2
+    m_Bits: 7424
   respawnTimer: 3
-  spawnPosition: {fileID: 0}
+  spawnPosition: {fileID: 7577879283211894457}
 --- !u!114 &8485327510173276760
 MonoBehaviour:
   m_ObjectHideFlags: 0

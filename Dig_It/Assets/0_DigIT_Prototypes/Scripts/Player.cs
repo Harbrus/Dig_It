@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     public float currDigCD;
     public float moveLimiter = 0.7f;
     private Vector3 movementAmount;
+    private int previousPoint;
     
     // State
     public PlayerState CurrentState;
@@ -30,6 +31,7 @@ public class Player : MonoBehaviour
     // Cached Components
     public Rigidbody2D MyRigidbody;
     public Animator CharacterAnimator;
+    public float decreaseSpeedAmount = 0.5f;
 
     public Vector3 MovementAmount { get => movementAmount;}
 
@@ -44,7 +46,21 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-                
+
+        if(previousPoint != GameManager.Instance.Points && GameManager.Instance.Points % 2 == 0 && speed > 1)
+        {
+            if(previousPoint >= GameManager.Instance.Points)
+            {
+                speed += decreaseSpeedAmount;
+            }
+            else
+            {
+                speed -= decreaseSpeedAmount;
+            }
+
+            previousPoint = GameManager.Instance.Points;
+        }
+                    
         if (this.gameObject.GetComponent<Health>().Invulnerable)
         {
             movementAmount = Vector3.zero;
@@ -56,7 +72,7 @@ public class Player : MonoBehaviour
         movementAmount.x = Input.GetAxisRaw("Horizontal");
         movementAmount.y = Input.GetAxisRaw("Vertical");
         
-        if (Input.GetButtonDown("Fire1") && CurrentState != PlayerState.Digging && currDigCD <= 0)
+        if (Input.GetButtonDown("Dig") && CurrentState != PlayerState.Digging && currDigCD <= 0)
         {
             Dig();
             currDigCD = digCD;
@@ -108,14 +124,15 @@ public class Player : MonoBehaviour
     private void MoveCharacter()
     {
 
-        if (movementAmount.x != 0 && movementAmount.y != 0) // Check for diagonal movement
-        {
-            // limit movement speed diagonally, so you move at 70% speed
-            movementAmount *= moveLimiter;
-            movementAmount.y *= moveLimiter;
-        }
+        //if (movementAmount.x != 0 && movementAmount.y != 0 && isKeyboardUsed) // Check for diagonal movement
+        //{
+        //    // limit movement speed diagonally, so you move at 70% speed
+        //    movementAmount *= moveLimiter;
+        //    movementAmount.y *= moveLimiter;
+        //}
 
-        MyRigidbody.MovePosition(transform.position + movementAmount * speed * Time.fixedDeltaTime);
+        Vector3 movementVector = Vector2.ClampMagnitude(movementAmount, 1);
+        MyRigidbody.MovePosition(transform.position + movementVector * speed * Time.fixedDeltaTime);
     }
 
     // reset player position.

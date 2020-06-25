@@ -9,11 +9,16 @@ public class Jewel : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Player" && !collected)
+        if (collision.tag == "Player" && !collected)
         {
-            Destroy(gameObject);
-            collected = true;
+            CollectAndDestroy();
             GameManager.Instance.AddPoints(jewelPointValue);
         }
+    }
+
+    public void CollectAndDestroy()
+    {
+        collected = true;
+        Destroy(gameObject);
     }
 }

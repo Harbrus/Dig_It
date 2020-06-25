@@ -11,7 +11,7 @@ public class CommonGhost : MonoBehaviour
     public enum FacingDirection { Up, Right, Down, Left }
     public float speed = 2f;
     float initialSpeed;
-    bool hasTreasure = false;
+    public bool hasTreasure = false;
     bool reverseDirectionNow = false;
     public float collisionCheckDistance = 0f;
     private float initialCheckDistance;
@@ -261,10 +261,23 @@ public class CommonGhost : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.GetComponent<Block>() != null && collision.gameObject.GetComponent<Block>().BeingPushed)
+        if (collision.gameObject.tag == "SolidBlock" && !checkCollisionAfterRespawn)
         {
-            checkCollisionAfterRespawn = false;
             StartCoroutine(Respawn());
+        }
+        else if (collision.gameObject.tag == "Jewel")
+        {
+            if (hasTreasure)
+            {
+                randomTurn = true;
+                StartCoroutine(Turn());
+            }
+            else
+            {
+                collision.gameObject.GetComponent<Jewel>().CollectAndDestroy();
+                HasTreasure();
+            }
+
         }
     }
 

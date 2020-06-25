@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    public bool BeingPushed { get; set; }
+    public bool beingPushed = false;
+    public bool BeingPushed { get => beingPushed; set => beingPushed = value; }
     Vector2 currPos;
     Vector2 lastPos;
 
