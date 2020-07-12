@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/0_DigIT_Prototypes/Scenes/Prototype4-PushInLevel.unity
+    path: Assets/0_DigIT_Prototypes/Scenes/Prototype4-5-PushInLevelAndHole.unity
     guid: 9b86244a0967a994fbdc6209862b73ae
   m_configObjects: {}

@@ -15,6 +15,7 @@ TagManager:
   - OuterWall
   - Ground
   - Jewel
+  - PlayerFeet
   layers:
   - Default
   - TransparentFX

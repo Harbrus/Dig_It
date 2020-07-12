@@ -12,7 +12,8 @@ public class Steal : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && !playerObject.GetComponent<Health>().Invulnerable)
+        if (collision.gameObject.CompareTag("Player") && !playerObject.GetComponent<Health>().Invulnerable &&
+            !playerObject.GetComponent<Player>().fallenInAHole)
         {
             if (playerObject.GetComponent<Health>() != null)
             {
